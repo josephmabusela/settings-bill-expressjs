@@ -6,7 +6,7 @@ const SettingsBill = require('./settings-bill');
 const app = express();
 const settingsBill = SettingsBill();
 
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.engine('handlebars', exphbs({defaultLayout: ''}));
 app.set('view engine', 'handlebars');
 
 // parse application/x-www-form-urlencoded
