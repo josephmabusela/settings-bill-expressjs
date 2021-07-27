@@ -20,7 +20,8 @@ app.use(express.static('public'));
 
 app.get('/', function(req, res) {
     res.render('index', {
-      settings: settingsBill.getSettings()
+      settings: settingsBill.getSettings(),
+      totals: settingsBill.totals()
     });
 });
 
@@ -40,10 +41,17 @@ app.post('/settings', function(req, res){
 
 app.post('/action', function(req, res) {
 
+  //capture the call type to add
+  //console.log(req.body.actionType);
+
+  settingsBill.recordAction(req.body.actionType);
+
+  res.redirect('/');
+
 });
 
 app.get('/actions', function(req, res) {
-
+  res.render('actions')
 });
 
 app.get('/actions/:type', function(req, res) {
