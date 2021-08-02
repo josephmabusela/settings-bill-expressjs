@@ -1,19 +1,19 @@
 const express = require('express');
 const exphbs  = require('express-handlebars');
-const bodyParser = require('body-parser');
+//const bodyParser = require('body-parser');
 const SettingsBill = require('./settings-bill');
 
 const app = express();
 const settingsBill = SettingsBill();
 
-app.engine('handlebars', exphbs({defaultLayout: ''}));
+app.engine('handlebars', exphbs({layoutsDir: 'views/layouts/'}));
 app.set('view engine', 'handlebars');
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 
 // parse application/json
-app.use(bodyParser.json())
+app.use(express.json());
 
 app.use(express.static('public'));
 
@@ -47,8 +47,13 @@ app.get('/actions', function(req, res) {
   })
 });
 
-app.get('/actions/:type', function(req, res) {
+app.get('/actions/:actionType', function(req, res) {
+  	
+  const actionType = req.params.actionType;
 
+  res.render('actions', {
+    actions: settingsBill.actionsFor(actionType)
+  })
 });
 
 let PORT = process.env.PORT || 3010;

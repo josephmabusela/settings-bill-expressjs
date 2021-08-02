@@ -1,75 +1,112 @@
+const assert = require('assert');
+
+const SettingsBill = require('../settings-bill');
+
+
 describe('settings-bill', function(){
-    it('should be able to set the call cost',function(){
 
-        let settingsBill = billSettings();
-        settingsBill.setCallCost(1.85);
-        assert.equal(1.85,settingsBill.getCallCost());    
+    const settingsBill = SettingsBill();
 
-        let settingsBill1 = billSettings();
-        settingsBill1.setCallCost(1.85);
-        assert.equal(1.85,settingsBill1.getCallCost()); 
+    it('should be able to record calls', function(){
+        settingsBill.setSettings({
+            smsCost: 1.50,
+            callCost: 2.50,
+            warningLevel: 30,
+            criticalLevel: 40
+        });
+        settingsBill.recordAction('call')
+        assert.strictEqual(1, settingsBill.actionsFor('call').length)
     });
 
-    it('should be able to set the sms cost',function(){
+    it('should be able to set the settings', function(){
+        settingsBill.setSettings({
+            smsCost: 2.35,
+            callCost: 3.35,
+            warningLevel: 30,
+            criticalLevel: 40
+        });
 
-        let settingsBill = billSettings();
-        settingsBill.setSmsCost(0.85);
-        assert.equal(0.85,settingsBill.getSmsCost());    
+        assert.deepStrictEqual({
+            smsCost: 2.35,
+            callCost: 3.35,
+            warningLevel: 30,
+            criticalLevel: 40
+        }, settingsBill.getSettings())
 
-        let settingsBill1 = billSettings();
-        settingsBill1.setSmsCost(2.00);
-        assert.equal(2.00,settingsBill1.getSmsCost()); 
+
     });
 
-    it('should be able to set the call and sms cost',function(){
+    it('should calculate the right totals', function(){
+        const settingsBill = SettingsBill();
+        settingsBill.setSettings({
+            smsCost: 2.35,
+            callCost: 3.35,
+            warningLevel: 30,
+            criticalLevel: 40
+        });
 
-        let settingsBill = billSettings();
-        settingsBill.setCallCost(5.00);
-        settingsBill.setSmsCost(2.85);
-        assert.equal(5.00,settingsBill.getCallCost()); 
-        assert.equal(2.85,settingsBill.getSmsCost());    
+        settingsBill.recordAction('call');
+        settingsBill.recordAction('sms');
 
-        let settingsBill1 = billSettings();
-        settingsBill1.setCallCost(3.00);
-        settingsBill1.setSmsCost(2.00);
-        assert.equal(3.00,settingsBill1.getCallCost()); 
-        assert.equal(2.00,settingsBill1.getSmsCost());    
-    })
+        assert.strictEqual(2.35.toFixed(2), settingsBill.totals().smsTotal);
+        assert.strictEqual(3.35.toFixed(2), settingsBill.totals().callTotal);
+        assert.strictEqual(5.70.toFixed(2), settingsBill.totals().grandTotal);
 
-    it('should be able to set the warning level',function(){
-
-        let settingsBill = billSettings();
-        settingsBill.setWarning(20.00);
-        assert.equal(20.00,settingsBill.getWarning());    
-
-        let settingsBill1 = billSettings();
-        settingsBill1.setWarning(15.00);
-        assert.equal(15.00,settingsBill1.getWarning()); 
-
-    })
-
-    it('should be able to set the critical level',function(){
-
-        let settingsBill = billSettings();
-        settingsBill.setCritical(50.00);
-        assert.equal(50.00,settingsBill.getCritical());    
-
-        let settingsBill1 = billSettings();
-        settingsBill1.setWarning(35.00);
-        assert.equal(35.00,settingsBill1.getWarning()); 
     });
 
-    it('should be able to set the warning and critical level',function(){
+    it('should calculate the right totals for multiple actions', function(){
+        const settingsBill = SettingsBill();
+        settingsBill.setSettings({
+            smsCost: 2.35,
+            callCost: 3.35,
+            warningLevel: 30,
+            criticalLevel: 40
+        });
 
-        let settingsBill = billSettings();
-        settingsBill.setWarning(10.00);
-        settingsBill.setCritical(30.00);
-        assert.equal(30.00,settingsBill.getCritical());    
-        assert.equal(10.00,settingsBill.getWarning()); 
+        settingsBill.recordAction('call');
+        settingsBill.recordAction('call');
+        settingsBill.recordAction('sms');
+        settingsBill.recordAction('sms');
+
+        assert.strictEqual(4.70.toFixed(2), settingsBill.totals().smsTotal);
+        assert.strictEqual(6.70.toFixed(2), settingsBill.totals().callTotal);
+        assert.strictEqual(11.40.toFixed(2), settingsBill.totals().grandTotal);
+
+    });
+
+    it('should know when warning level reached', function(){
+        const settingsBill = SettingsBill();
+        settingsBill.setSettings({
+            smsCost: 2.50,
+            callCost: 5.00,
+            warningLevel: 5,
+            criticalLevel: 10
+        });
+
+        settingsBill.recordAction('call');
+        settingsBill.recordAction('sms');
+
+        assert.strictEqual(true, settingsBill.hasReachedWarningLevel());
+    });
+
+    it('should know when critical level reached', function(){
+        const settingsBill = SettingsBill();
+        settingsBill.setSettings({
+            smsCost: 2.50,
+            callCost: 5.00,
+            warningLevel: 5,
+            criticalLevel: 10
+        });
+
+        settingsBill.recordAction('call');
+        settingsBill.recordAction('call');
+        settingsBill.recordAction('sms');
+
+        assert.strictEqual(true, settingsBill.hasReachedCriticalLevel());
 
     });
 });
-
+/** 
 describe('settings-widget', function(){
     it('should be able to use the call cost values',function(){
 
@@ -131,8 +168,9 @@ describe('settings-widget', function(){
         assert.equal(20.00,settingsBill.getTotalCallCost());
         assert.equal(0.50,settingsBill.getTotalSmsCost());
     });
-});
-
+}); 
+**/
+/** 
 describe('Warning and critical level', function(){
     it('should return "warning" if warning level is reached',function(){
 
@@ -177,3 +215,4 @@ describe('Warning and critical level', function(){
         assert.equal('critical',settingsBill.levels()); 
     });
 });
+*/
