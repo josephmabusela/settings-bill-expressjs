@@ -10,11 +10,10 @@ app.engine('handlebars', exphbs({defaultLayout: ''}));
 app.set('view engine', 'handlebars');
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json())
-
 
 app.use(express.static('public'));
 
@@ -26,38 +25,31 @@ app.get('/', function(req, res) {
 });
 
 app.post('/settings', function(req, res){
-
    settingsBill.setSettings({
        callCost: req.body.callCost,
        smsCost: req.body.smsCost,
        warningLevel: req.body.warningLevel,
        criticalLevel: req.body.criticalLevel
    });
-
    console.log(settingsBill.getSettings());
-
    res.redirect('/');
 });
 
 app.post('/action', function(req, res) {
-
-  //capture the call type to add
-  //console.log(req.body.actionType);
-
+  
   settingsBill.recordAction(req.body.actionType);
-
   res.redirect('/');
-
 });
 
 app.get('/actions', function(req, res) {
-  res.render('actions')
+  res.render('actions', {
+    actions: settingsBill.actions()
+  })
 });
 
 app.get('/actions/:type', function(req, res) {
 
 });
-
 
 let PORT = process.env.PORT || 3010;
 

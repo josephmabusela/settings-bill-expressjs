@@ -14,8 +14,7 @@ module.exports = function SettingsBill() {
         criticalLevel = settings.criticalLevel;
     }
 
-    function getSettings
-    () {
+    function getSettings() {
         return {
             smsCost,
             callCost,
@@ -25,13 +24,12 @@ module.exports = function SettingsBill() {
     }
 
     function recordAction(action) {
-
         let cost = 0;
         if (action === 'sms'){
-            cost = smsCost;
+            cost += smsCost;
         }
         else if (action === 'call'){
-            cost = callCost;
+            cost += callCost;
         }
 
         actionList.push({
