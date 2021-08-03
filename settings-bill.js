@@ -25,11 +25,11 @@ module.exports = function SettingsBill() {
 
     function recordAction(action) {
         let cost = 0;
-        if (action === 'sms'){
-            cost += smsCost;
+        if (action === 'sms' && !hasReachedCriticalLevel()){
+            cost = smsCost;
         }
-        else if (action === 'call'){
-            cost += callCost;
+        else if (action === 'call' && !hasReachedCriticalLevel()){
+            cost = callCost;
         }
 
         actionList.push({

@@ -18,10 +18,23 @@ app.use(express.json());
 app.use(express.static('public'));
 
 app.get('/', function(req, res) {
-    res.render('index', {
-      settings: settingsBill.getSettings(),
-      totals: settingsBill.totals()
-    });
+
+  let className = '';
+
+  if (settingsBill.hasReachedWarningLevel()) {
+    className = 'warning';
+  }
+  if (settingsBill.hasReachedCriticalLevel()) {
+    className = 'danger';
+  }
+  res.render('index', {
+    settings: settingsBill.getSettings(),
+    totals: settingsBill.totals(),
+    className: className
+  });
+  if (settingsBill.totals().grandTotal < settingsBill.getSettings().criticalLevel) {
+    
+  }
 });
 
 app.post('/settings', function(req, res){
