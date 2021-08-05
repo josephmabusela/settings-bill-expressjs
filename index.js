@@ -68,9 +68,9 @@ app.get('/actions/:actionType', function(req, res) {
   res.render('actions', {actions: settingsBill.actionsFor(actionType)})
 
   let actions = settingsBill.actions()
-    actions.forEach(elem => {
-        elem.timestamps = moment(elem.timestamp).fromNow();
-    })
+  actions.forEach(elem => {
+      elem.timestamp = moment(elem.timestamp).fromNow();
+  })
 
 });
 
