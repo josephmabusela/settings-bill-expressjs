@@ -22,19 +22,20 @@ app.get('/', function(req, res) {
 
   let className = '';
 
-  if (settingsBill.hasReachedWarningLevel()) {
-    className = 'warning';
+  if(settingsBill.hasReachedWarningLevel()){
+      className = 'warning'
   }
-  if (settingsBill.hasReachedCriticalLevel()) {
-    className = 'danger';
+  if(settingsBill.hasReachedCriticalLevel()){
+      className = 'danger'
   }
   res.render('index', {
-    settings: settingsBill.getSettings(),
-    totals: settingsBill.totals(),
-    className: className
-  });
-  if (settingsBill.totals().grandTotal < settingsBill.getSettings().criticalLevel) {
-    
+      settings: settingsBill.getSettings(),
+      totals: settingsBill.totals(),
+      classNames: className
+  })
+
+  if(settingsBill.totals().grandTotal < settingsBill.getSettings().criticalLevel){
+      
   }
 });
 
